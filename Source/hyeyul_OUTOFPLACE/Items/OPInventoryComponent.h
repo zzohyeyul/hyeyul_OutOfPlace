@@ -20,6 +20,8 @@ public:
 	int32 GetCapacity() const { return Capacity; }
 	int32 GetCount() const { return ItemIds.Num(); }
 	const TArray<FName>& GetItemIds() const { return ItemIds; }
+
+	const FOnInventoryChanged& GetOnInventoryChanged() const { return OnInventoryChanged; }
 	FOnInventoryChanged& GetOnInventoryChanged() { return OnInventoryChanged; }
 
 private:

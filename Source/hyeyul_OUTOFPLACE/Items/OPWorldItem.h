@@ -17,7 +17,7 @@ public:
 	AOPWorldItem();
 
 	virtual bool CanInteract(AActor* Interactor) const override;
-	virtual FText GetInteractText() const override;
+	virtual FText GetInteractText(AActor* Interactor) const override;
 	virtual void Interact(AActor* Interactor) override;
 
 protected:

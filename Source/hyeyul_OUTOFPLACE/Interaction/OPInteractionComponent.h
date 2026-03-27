@@ -21,6 +21,7 @@ enum class EOPInteractFailReason : uint8
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnFocusChanged, AActor* /*OldFocus*/, AActor* /*NewFocus*/);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInteractResult, bool /*bSuccess*/, AActor* /*Target*/, EOPInteractFailReason /*Reason*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnInteractionPromptChanged, const FText& /*PromptText*/);
 
 UCLASS(ClassGroup = (Interaction), meta = (BlueprintSpawnableComponent))
 class HYEYUL_OUTOFPLACE_API UOPInteractionComponent : public UActorComponent
@@ -35,12 +36,23 @@ public:
 	bool Interact();
 	AActor* GetCurrentFocusActor() const { return CurrentFocusActor.Get(); }
 
-	FOnFocusChanged OnFocusChanged;
-	FOnInteractResult OnInteractResult;
+	const FOnFocusChanged& GetOnFocusChanged() const { return OnFocusChanged; }
+	FOnFocusChanged& GetOnFocusChanged() { return OnFocusChanged; }
+
+	const FOnInteractResult& GetOnInteractResult() const { return OnInteractResult; }
+	FOnInteractResult& GetOnInteractResult() { return OnInteractResult; }
+
+	const FOnInteractionPromptChanged& GetOnInteractionPromptChanged() const { return OnInteractionPromptChanged; }
+	FOnInteractionPromptChanged& GetOnInteractionPromptChanged() { return OnInteractionPromptChanged; }
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+private:
+	void PerformTrace();
+	void BroadcastPrompt();
+	FText BuildPromptText(AActor* FocusActor) const;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Interaction")
@@ -50,6 +62,9 @@ private:
 	bool bDrawDebug = true;
 
 	TWeakObjectPtr<AActor> CurrentFocusActor;
+	FText CachedPromptText;
 
-	void PerformTrace();
+	FOnFocusChanged OnFocusChanged;
+	FOnInteractResult OnInteractResult;
+	FOnInteractionPromptChanged OnInteractionPromptChanged;
 };

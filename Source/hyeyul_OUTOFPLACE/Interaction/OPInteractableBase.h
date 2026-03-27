@@ -13,7 +13,7 @@ public:
 	AOPInteractableBase();
 
 	virtual bool CanInteract(AActor* Interactor) const;
-	virtual FText GetInteractText() const;
+	virtual FText GetInteractText(AActor* Interactor) const;
 	virtual void Interact(AActor* Interactor);
 
 protected:

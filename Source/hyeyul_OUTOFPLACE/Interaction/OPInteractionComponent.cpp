@@ -1,4 +1,4 @@
-#include "OPInteractionComponent.h"
+#include "Interaction/OPInteractionComponent.h"
 
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
@@ -17,6 +17,7 @@ UOPInteractionComponent::UOPInteractionComponent()
 void UOPInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	BroadcastPrompt();
 }
 
 void UOPInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -45,7 +46,8 @@ void UOPInteractionComponent::PerformTrace()
 	}
 
 	const FVector Start = Cam->GetCameraLocation();
-	const FVector End = Start + (Cam->GetActorForwardVector() * TraceDistance);
+	const FVector Forward = Cam->GetCameraRotation().Vector();
+	const FVector End = Start + (Forward * TraceDistance);
 
 	FHitResult Hit;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(OP_InteractTrace), false);
@@ -61,11 +63,14 @@ void UOPInteractionComponent::PerformTrace()
 	AActor* NewFocus = bHit ? Hit.GetActor() : nullptr;
 	AActor* OldFocus = CurrentFocusActor.Get();
 
-	if (OldFocus != NewFocus)
+	if (OldFocus == NewFocus)
 	{
-		CurrentFocusActor = NewFocus;
-		OnFocusChanged.Broadcast(OldFocus, NewFocus);
+		return;
 	}
+
+	CurrentFocusActor = NewFocus;
+	OnFocusChanged.Broadcast(OldFocus, NewFocus);
+	BroadcastPrompt();
 }
 
 bool UOPInteractionComponent::Interact()
@@ -107,9 +112,39 @@ bool UOPInteractionComponent::Interact()
 		return false;
 	}
 
-	// 실행
 	Interactable->Interact(Owner);
 
 	OnInteractResult.Broadcast(true, Target, EOPInteractFailReason::None);
+	BroadcastPrompt();
 	return true;
+}
+
+void UOPInteractionComponent::BroadcastPrompt()
+{
+	const FText NewPrompt = BuildPromptText(CurrentFocusActor.Get());
+	if (CachedPromptText.EqualTo(NewPrompt))
+	{
+		return;
+	}
+
+	CachedPromptText = NewPrompt;
+	OnInteractionPromptChanged.Broadcast(CachedPromptText);
+}
+
+FText UOPInteractionComponent::BuildPromptText(AActor* FocusActor) const
+{
+	AActor* Owner = GetOwner();
+	AOPInteractableBase* Interactable = Cast<AOPInteractableBase>(FocusActor);
+	if (!Owner || !Interactable)
+	{
+		return FText::GetEmpty();
+	}
+
+	const FText InteractText = Interactable->GetInteractText(Owner);
+	if (InteractText.IsEmpty())
+	{
+		return FText::GetEmpty();
+	}
+
+	return FText::Format(FText::FromString(TEXT("E : {0}")), InteractText);
 }

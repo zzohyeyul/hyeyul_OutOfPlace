@@ -17,7 +17,7 @@ public:
 	AOPExitDoor();
 
 	virtual bool CanInteract(AActor* Interactor) const override;
-	virtual FText GetInteractText() const override;
+	virtual FText GetInteractText(AActor* Interactor) const override;
 	virtual void Interact(AActor* Interactor) override;
 
 private:
@@ -30,7 +30,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Exit", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> Trigger;
 
-	// 4개 수집이면 열리게
 	UPROPERTY(EditAnywhere, Category = "Exit", meta = (ClampMin = "1"))
 	int32 RequiredItemCount = 4;
 

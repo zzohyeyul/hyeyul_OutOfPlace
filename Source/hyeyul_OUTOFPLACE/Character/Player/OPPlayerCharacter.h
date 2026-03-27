@@ -17,9 +17,11 @@ class HYEYUL_OUTOFPLACE_API AOPPlayerCharacter : public ACharacter
 public:
 	AOPPlayerCharacter();
 
+	UOPInteractionComponent* GetInteractionComponent() const { return InteractionComp; }
+	UOPInventoryComponent* GetInventoryComponent() const { return InventoryComp; }
+
 protected:
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:

@@ -1,4 +1,4 @@
-#include "OPInventoryComponent.h"
+#include "Items/OPInventoryComponent.h"
 
 UOPInventoryComponent::UOPInventoryComponent()
 {
@@ -17,7 +17,6 @@ bool UOPInventoryComponent::AddItemId(const FName& ItemId)
 		return false;
 	}
 
-	// 중복 4개 수집 컨셉이라 비허용
 	if (ItemIds.Contains(ItemId))
 	{
 		return false;

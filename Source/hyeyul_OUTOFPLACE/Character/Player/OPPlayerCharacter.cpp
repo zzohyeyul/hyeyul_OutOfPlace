@@ -1,4 +1,4 @@
-#include "OPPlayerCharacter.h"
+#include "Character/Player/OPPlayerCharacter.h"
 
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
@@ -10,7 +10,7 @@
 
 AOPPlayerCharacter::AOPPlayerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	InteractionComp = CreateDefaultSubobject<UOPInteractionComponent>(TEXT("InteractionComp"));
 	InventoryComp = CreateDefaultSubobject<UOPInventoryComponent>(TEXT("InventoryComp"));
@@ -31,20 +31,25 @@ void AOPPlayerCharacter::BeginPlay()
 	}
 }
 
-void AOPPlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void AOPPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	if (!EIC) return;
+	if (!EIC)
+	{
+		return;
+	}
 
-	if (IA_Move)  EIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AOPPlayerCharacter::Move);
-	if (IA_Look)  EIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AOPPlayerCharacter::Look);
+	if (IA_Move)
+	{
+		EIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AOPPlayerCharacter::Move);
+	}
+
+	if (IA_Look)
+	{
+		EIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AOPPlayerCharacter::Look);
+	}
 
 	if (IA_Run)
 	{
@@ -61,11 +66,13 @@ void AOPPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void AOPPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
-	if (Controller)
+	if (!Controller)
 	{
-		AddMovementInput(GetActorForwardVector(), Axis.Y);
-		AddMovementInput(GetActorRightVector(), Axis.X);
+		return;
 	}
+
+	AddMovementInput(GetActorForwardVector(), Axis.Y);
+	AddMovementInput(GetActorRightVector(), Axis.X);
 }
 
 void AOPPlayerCharacter::Look(const FInputActionValue& Value)

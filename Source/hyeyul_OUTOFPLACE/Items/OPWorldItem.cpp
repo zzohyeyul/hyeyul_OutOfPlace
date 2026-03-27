@@ -1,4 +1,4 @@
-#include "OPWorldItem.h"
+#include "Items/OPWorldItem.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/DataTable.h"
@@ -23,14 +23,31 @@ UOPInventoryComponent* AOPWorldItem::FindInventory(AActor* Interactor) const
 
 bool AOPWorldItem::CanInteract(AActor* Interactor) const
 {
-	if (!GetCanInteractFlag()) return false;
-	if (ItemId.IsNone()) return false;
+	if (!GetCanInteractFlag())
+	{
+		return false;
+	}
+
+	if (ItemId.IsNone())
+	{
+		return false;
+	}
 
 	UOPInventoryComponent* Inv = FindInventory(Interactor);
-	if (!Inv) return false;
+	if (!Inv)
+	{
+		return false;
+	}
 
-	if (Inv->HasItemId(ItemId)) return false;
-	if (Inv->GetCount() >= Inv->GetCapacity()) return false;
+	if (Inv->HasItemId(ItemId))
+	{
+		return false;
+	}
+
+	if (Inv->GetCount() >= Inv->GetCapacity())
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -46,20 +63,24 @@ FText AOPWorldItem::GetItemDisplayNameFromTable() const
 	return Row ? Row->DisplayName : FText::GetEmpty();
 }
 
-FText AOPWorldItem::GetInteractText() const
+FText AOPWorldItem::GetInteractText(AActor* Interactor) const
 {
 	const FText Name = GetItemDisplayNameFromTable();
 	if (!Name.IsEmpty())
 	{
 		return FText::Format(FText::FromString(TEXT("Pick Up : {0}")), Name);
 	}
+
 	return GetInteractTextRef();
 }
 
 void AOPWorldItem::Interact(AActor* Interactor)
 {
 	UOPInventoryComponent* Inv = FindInventory(Interactor);
-	if (!Inv) return;
+	if (!Inv)
+	{
+		return;
+	}
 
 	if (Inv->AddItemId(ItemId))
 	{

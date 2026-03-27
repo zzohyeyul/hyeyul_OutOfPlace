@@ -1,4 +1,4 @@
-#include "OPInteractableBase.h"
+#include "Interaction/OPInteractableBase.h"
 
 AOPInteractableBase::AOPInteractableBase()
 {
@@ -11,12 +11,11 @@ bool AOPInteractableBase::CanInteract(AActor* Interactor) const
 	return bCanInteract;
 }
 
-FText AOPInteractableBase::GetInteractText() const
+FText AOPInteractableBase::GetInteractText(AActor* Interactor) const
 {
 	return InteractText;
 }
 
 void AOPInteractableBase::Interact(AActor* Interactor)
 {
-	// 기본 동작 없음 - 상속 클래스에서 override
 }

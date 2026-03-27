@@ -6,32 +6,36 @@
 
 class AActor;
 
-UENUM()
+UENUM(BlueprintType)
 enum class EOPGameResult : uint8
 {
-	None,
-	Cleared,
-	GameOver
+    None,
+    Cleared,
+    GameOver
 };
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnGameResult, EOPGameResult /*Result*/, AActor* /*Instigator*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnOPGameResult, EOPGameResult /*Result*/, AActor* /*InstigatorActor*/);
 
 UCLASS()
 class HYEYUL_OUTOFPLACE_API AOPGameModeBase : public AGameModeBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AOPGameModeBase();
+    AOPGameModeBase();
 
-	void RequestGameClear(AActor* InstigatorActor);
-	void RequestGameOver(AActor* InstigatorActor);
+    void RequestGameClear(AActor* InstigatorActor);
+    void RequestGameOver(AActor* InstigatorActor);
 
-	EOPGameResult GetGameResult() const { return GameResult; }
+    EOPGameResult GetGameResult() const { return GameResult; }
+
+    const FOnOPGameResult& GetOnGameResult() const { return OnGameResult; }
+    FOnOPGameResult& GetOnGameResult() { return OnGameResult; }
 
 private:
-	EOPGameResult GameResult = EOPGameResult::None;
-	FOnGameResult OnGameResult;
+    void BroadcastGameResult(EOPGameResult InResult, AActor* InstigatorActor);
 
-	void SetGameResult(EOPGameResult NewResult, AActor* InstigatorActor);
+private:
+    EOPGameResult GameResult = EOPGameResult::None;
+    FOnOPGameResult OnGameResult;
 };
