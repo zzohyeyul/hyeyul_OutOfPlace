@@ -1,8 +1,5 @@
 #include "Actor/OPExitDoor.h"
-
-#include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
-
 #include "Items/OPInventoryComponent.h"
 #include "Framework/OPGameModeBase.h"
 
@@ -15,12 +12,6 @@ AOPExitDoor::AOPExitDoor()
 
 	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
 	DoorMesh->SetupAttachment(Root);
-
-	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger"));
-	Trigger->SetupAttachment(Root);
-	Trigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Trigger->SetCollisionResponseToAllChannels(ECR_Ignore);
-	Trigger->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	LockedText = FText::FromString(TEXT("Need 4 items"));
 	ReadyText = FText::FromString(TEXT("Exit"));

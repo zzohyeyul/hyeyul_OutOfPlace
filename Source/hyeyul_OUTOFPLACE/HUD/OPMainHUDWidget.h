@@ -4,8 +4,6 @@
 #include "Blueprint/UserWidget.h"
 #include "OPMainHUDWidget.generated.h"
 
-class UCanvasPanel;
-class UHorizontalBox;
 class UTextBlock;
 
 UCLASS()
@@ -14,24 +12,31 @@ class HYEYUL_OUTOFPLACE_API UOPMainHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual TSharedRef<SWidget> RebuildWidget() override;
-
 	void UpdateInventory(const TArray<FName>& ItemIds, int32 Capacity);
 	void UpdateInteractionPrompt(const FText& PromptText);
 
-private:
-	void BuildInventorySlots(int32 SlotCount);
+protected:
+	virtual void NativeConstruct() override;
 
 private:
-	UPROPERTY()
-	TObjectPtr<UCanvasPanel> RootCanvas = nullptr;
+	void CacheInventorySlotTexts();
 
-	UPROPERTY()
-	TObjectPtr<UHorizontalBox> InventoryBox = nullptr;
-
-	UPROPERTY()
+private:
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> InteractionPromptText = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> InventorySlotText_0 = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> InventorySlotText_1 = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> InventorySlotText_2 = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> InventorySlotText_3 = nullptr;
+
+	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTextBlock>> InventorySlotTexts;
 };

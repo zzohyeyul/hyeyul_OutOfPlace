@@ -1,54 +1,28 @@
 #include "HUD/OPMainHUDWidget.h"
 
-#include "Blueprint/WidgetTree.h"
-#include "Components/Border.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
 #include "Components/TextBlock.h"
-#include "Layout/Margin.h"
 
-TSharedRef<SWidget> UOPMainHUDWidget::RebuildWidget()
+void UOPMainHUDWidget::NativeConstruct()
 {
-	WidgetTree = NewObject<UWidgetTree>(this, TEXT("MainHUDWidgetTree"));
+	Super::NativeConstruct();
+	CacheInventorySlotTexts();
+}
 
-	RootCanvas = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("RootCanvas"));
-	WidgetTree->RootWidget = RootCanvas;
+void UOPMainHUDWidget::CacheInventorySlotTexts()
+{
+	InventorySlotTexts.Reset();
 
-	InteractionPromptText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("InteractionPromptText"));
-	InteractionPromptText->SetText(FText::GetEmpty());
-
-	UCanvasPanelSlot* PromptSlot = RootCanvas->AddChildToCanvas(InteractionPromptText);
-	PromptSlot->SetAnchors(FAnchors(0.5f, 0.85f));
-	PromptSlot->SetAlignment(FVector2D(0.5f, 0.5f));
-	PromptSlot->SetAutoSize(true);
-
-	InventoryBox = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("InventoryBox"));
-
-	UCanvasPanelSlot* InventorySlot = RootCanvas->AddChildToCanvas(InventoryBox);
-	InventorySlot->SetAnchors(FAnchors(0.03f, 0.92f));
-	InventorySlot->SetAlignment(FVector2D(0.0f, 1.0f));
-	InventorySlot->SetAutoSize(true);
-
-	BuildInventorySlots(4);
-
-	return Super::RebuildWidget();
+	InventorySlotTexts.Add(InventorySlotText_0);
+	InventorySlotTexts.Add(InventorySlotText_1);
+	InventorySlotTexts.Add(InventorySlotText_2);
+	InventorySlotTexts.Add(InventorySlotText_3);
 }
 
 void UOPMainHUDWidget::UpdateInventory(const TArray<FName>& ItemIds, int32 Capacity)
 {
-	if (!InventoryBox)
-	{
-		return;
-	}
+	const int32 SlotCount = FMath::Min(Capacity, InventorySlotTexts.Num());
 
-	if (InventorySlotTexts.Num() != Capacity)
-	{
-		BuildInventorySlots(Capacity);
-	}
-
-	for (int32 Index = 0; Index < InventorySlotTexts.Num(); ++Index)
+	for (int32 Index = 0; Index < SlotCount; ++Index)
 	{
 		UTextBlock* SlotText = InventorySlotTexts[Index];
 		if (!SlotText)
@@ -74,30 +48,4 @@ void UOPMainHUDWidget::UpdateInteractionPrompt(const FText& PromptText)
 	}
 
 	InteractionPromptText->SetText(PromptText);
-}
-
-void UOPMainHUDWidget::BuildInventorySlots(int32 SlotCount)
-{
-	if (!InventoryBox || !WidgetTree || SlotCount <= 0)
-	{
-		return;
-	}
-
-	InventoryBox->ClearChildren();
-	InventorySlotTexts.Reset();
-
-	for (int32 Index = 0; Index < SlotCount; ++Index)
-	{
-		UBorder* SlotBorder = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-		UTextBlock* SlotText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
-
-		SlotText->SetText(FText::FromString(TEXT("- Empty -")));
-		SlotBorder->SetPadding(FMargin(12.0f));
-		SlotBorder->SetContent(SlotText);
-
-		UHorizontalBoxSlot* HorizontalSlot = InventoryBox->AddChildToHorizontalBox(SlotBorder);
-		HorizontalSlot->SetPadding(FMargin(4.0f, 0.0f, 4.0f, 0.0f));
-
-		InventorySlotTexts.Add(SlotText);
-	}
 }

@@ -4,7 +4,6 @@
 #include "Interaction/OPInteractableBase.h"
 #include "OPExitDoor.generated.h"
 
-class UBoxComponent;
 class UStaticMeshComponent;
 class UOPInventoryComponent;
 
@@ -26,9 +25,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Exit", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> DoorMesh;
-
-	UPROPERTY(VisibleAnywhere, Category = "Exit", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> Trigger;
 
 	UPROPERTY(EditAnywhere, Category = "Exit", meta = (ClampMin = "1"))
 	int32 RequiredItemCount = 4;

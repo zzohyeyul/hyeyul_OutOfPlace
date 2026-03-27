@@ -30,6 +30,12 @@ private:
 	void HandleGameResult(EOPGameResult Result, AActor* InstigatorActor);
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UOPMainHUDWidget> MainHUDWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UOPResultWidget> ResultWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UOPMainHUDWidget> MainHUDWidget = nullptr;
 

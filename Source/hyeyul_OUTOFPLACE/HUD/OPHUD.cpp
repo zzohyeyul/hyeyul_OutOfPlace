@@ -1,6 +1,5 @@
 #include "HUD/OPHUD.h"
 
-#include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
 
 #include "Character/Player/OPPlayerCharacter.h"
@@ -28,16 +27,18 @@ void AOPHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AOPHUD::InitializeWidgets()
 {
 	APlayerController* PC = GetOwningPlayerController();
-	if (!PC)
+	if (!PC || !MainHUDWidgetClass)
 	{
 		return;
 	}
 
-	MainHUDWidget = CreateWidget<UOPMainHUDWidget>(PC, UOPMainHUDWidget::StaticClass());
-	if (MainHUDWidget)
+	MainHUDWidget = CreateWidget<UOPMainHUDWidget>(PC, MainHUDWidgetClass);
+	if (!MainHUDWidget)
 	{
-		MainHUDWidget->AddToViewport(0);
+		return;
 	}
+
+	MainHUDWidget->AddToViewport(0);
 }
 
 void AOPHUD::BindPlayerData()
@@ -130,14 +131,14 @@ void AOPHUD::HandleInteractionPromptChanged(const FText& PromptText)
 void AOPHUD::HandleGameResult(EOPGameResult Result, AActor* InstigatorActor)
 {
 	APlayerController* PC = GetOwningPlayerController();
-	if (!PC)
+	if (!PC || !ResultWidgetClass)
 	{
 		return;
 	}
 
 	if (!ResultWidget)
 	{
-		ResultWidget = CreateWidget<UOPResultWidget>(PC, UOPResultWidget::StaticClass());
+		ResultWidget = CreateWidget<UOPResultWidget>(PC, ResultWidgetClass);
 		if (ResultWidget)
 		{
 			ResultWidget->AddToViewport(100);
